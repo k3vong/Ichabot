@@ -1,0 +1,46 @@
+tiles: row, col, height, and gold amount.
+tile(0, 0, 10, 0).
+tile(0, 1, 10, 0).
+tile(1, 0, 10, 10).
+tile(1, 1, 10, 0).
+
+spawn point.
+spawn(0, 0).
+
+exit location.
+exit(1, 1).
+
+treasure mapping: from tile (0,1) a treasure leads to tile (1,0).
+treasure(0, 1, 1, 0).
+
+current water level.
+waterLevel(0).
+
+agent with id, starting row, col, and initial gold.
+agent(1, 0, 0, 0).
+
+A tile is flooded if the water goes above the height
+flooded(Row, Col) :-
+    tile(Row, Col, Height, _),
+    waterLevel(WL),
+    WL > Height.
+
+The agent is only safe when they are on a tile that is not flooded
+safe(AgentID) :-
+    agent(AgentID, Row, Col, _),
+    tile(Row, Col, Height, _),
+    waterLevel(WL),
+    WL =< Height.
+
+Get the agents current gold
+agentGold(AgentID, Gold) :-
+    agent(AgentID, _, _, Gold).
+
+The agent can only exit when the coordinates match one that is an exit
+reachedExit(AgentID) :-
+    agent(AgentID, Row, Col, _),
+    exit(Row, Col).
+
+Queries
+?flooded(row, col) 
+?safe(1)
