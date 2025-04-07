@@ -1,0 +1,48 @@
+package edu.washburn.cis.ichabot.search;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
+public class PruningQueue<S> implements SearchQueue<S> {
+    private final Queue<SearchNode<?, S>> queue;
+    private final Set<S> visitedStates;
+    
+    // Constructor for BFS with pruning
+    public PruningQueue() {
+        this.queue = new LinkedList<>();
+        this.visitedStates = new HashSet<>();
+    }
+    
+    @Override
+    public void add(SearchNode<?, S> node) {
+        S state = node.STATE;
+        // Only add the state if we haven't seen it before
+        if (!visitedStates.contains(state)) {
+            queue.add(node);
+            visitedStates.add(state);
+        }
+    }
+    
+    @Override
+    public SearchNode<?, S> remove() {
+        return queue.remove();
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
+    
+    // Factory method to create a pruning BFS queue
+    public static <A, S> SearchQueue<S> generatePruningBFSQueue() {
+        return new PruningQueue<>();
+    }
+    
+    // Get the number of visited states
+    public int getVisitedCount() {
+        return visitedStates.size();
+    }
+}
+
