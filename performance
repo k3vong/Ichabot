@@ -1,0 +1,61 @@
+package edu.washburn.cis.ichabot.implementation.npuzzle;
+
+import edu.washburn.cis.ichabot.search.*;
+
+public class NPuzzlePerformanceComparison {
+    public static void main(String[] args) {
+        // Define a moderately difficult 8-puzzle
+        int[][] puzzle = {
+            {2, 8, 3},
+            {1, 6, 4},
+            {7, 0, 5}
+        };
+        
+        int size = puzzle.length;
+        var initialState = new NPuzzleState(size, puzzle);
+        
+        // Print the puzzle we're solving
+        System.out.println("Puzzle Configuration:");
+        System.out.println(initialState);
+        
+        // BFS without pruning
+        System.out.println("\nBFS without pruning:");
+        measurePerformance(initialState, Searcher.generateBFSQueue());
+        
+        // BFS with pruning
+        System.out.println("\nBFS with pruning:");
+        measurePerformance(initialState, PruningQueue.generatePruningBFSQueue());
+    }
+    
+    private static void measurePerformance(NPuzzleState initialState, 
+                                           SearchQueue<NPuzzleState> queue) {
+        var searcher = new Searcher<NPuzzleAction, NPuzzleState>(
+            initialState,
+            NPuzzleState.makeGoal(initialState.SIZE),
+            queue);
+        
+        long startTime = System.currentTimeMillis();
+        var solution = searcher.findFirst();
+        long endTime = System.currentTimeMillis();
+        
+        if (solution != null) {
+            int steps = countSteps(solution);
+            System.out.println("Nodes expanded: " + searcher.getExpansions());
+            System.out.println("Solution found in " + steps + " steps");
+            System.out.println("Time: " + (endTime - startTime) + " ms");
+        } else {
+            System.out.println("No solution found");
+            System.out.println("Nodes expanded: " + searcher.getExpansions());
+            System.out.println("Time: " + (endTime - startTime) + " ms");
+        }
+    }
+    
+    private static int countSteps(SearchNode<NPuzzleAction, NPuzzleState> solution) {
+        int steps = 0;
+        while (solution.PRIOR != null) {
+            steps++;
+            solution = solution.PRIOR;
+        }
+        return steps;
+    }
+}
